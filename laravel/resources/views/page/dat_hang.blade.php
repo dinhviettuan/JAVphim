@@ -18,6 +18,14 @@
 		<div id="content">
 			
 			<form action="{{route('dathang')}}" method="post" class="beta-form-checkout">
+				<input type="hidden" name="_token" value="{{csrf_token()}}">
+				<div class="row">
+					@if(Session::has('thongbao'))
+					<marquee width="40%" direction="right" height="50%">
+						<h2><font color="red"  size="20px" >{{Session::get('thongbao')}}</font></h2>
+					</marquee>
+					
+					@endif</div>
 				<div class="row">
 					<div class="col-sm-6">
 						<h4>Đặt hàng</h4>
@@ -82,7 +90,9 @@
 									<div class="pull-left"><p class="your-order-f18">Tổng tiền:</p></div>
 									<div class="pull-right"><h5 class="color-black">
 										@if(Session::has('cart'))
-										{{number_format($totalPrice)}} @endif Đồng</h5></div>
+										{{number_format($totalPrice)}}
+										@else 0
+										@endif Đồng</h5></div>
 									<div class="clearfix"></div>
 								</div>
 							</div>
@@ -91,7 +101,7 @@
 							<div class="your-order-body">
 								<ul class="payment_methods methods">
 									<li class="payment_method_bacs">
-										<input id="payment_method_bacs" type="radio" class="input-radio" name="payment_method" value="COD" checked="checked" data-order_button_text="" name="payment">
+										<input id="payment_method_bacs" type="radio" class="input-radio" name="payment_method" value="COD" checked="checked" data-order_button_text="">
 										<label for="payment_method_bacs">Thanh toán khi nhận hàng </label>
 										<div class="payment_box payment_method_bacs" style="display: block;">
 											Cửa hàng sẽ gửi hàng đến địa chỉ của bạn, bạn xem hàng rồi thanh toán tiền cho nhân viên giao hàng
@@ -112,7 +122,7 @@
 								</ul>
 							</div>
 
-							<div class="text-center"><a class="beta-btn primary" href="#">Đặt hàng <i class="fa fa-chevron-right"></i></a></div>
+							<div class="text-center"><button type="submit" class="beta-btn primary" href="#">Đặt hàng <i class="fa fa-chevron-right"></i></button></div>
 						</div> <!-- .your-order -->
 					</div>
 				</div>

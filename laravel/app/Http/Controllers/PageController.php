@@ -9,6 +9,9 @@ use Session;
 use App\Customer;
 use App\Bill;
 use App\BillDetail;
+use App\User;
+use Hash;
+use Auth;
 
 
 use Illuminate\Http\Request;
@@ -74,8 +77,8 @@ class PageController extends Controller
         $cart = Session::get('cart');
         $customer = new Customer;
         $customer->name = $req->name;
-        $customer->gender = $req->name;
-        $customer->email = $req->name;
+        $customer->gender = $req->gender;
+        $customer->email = $req->email;
         $customer->address = $req->address;
         $customer->phone_number = $req->phone;
         $customer->note = $req->notes;
@@ -83,14 +86,13 @@ class PageController extends Controller
 
         $bill = new Bill;
         $bill->id_customer = $customer->id;
-        $bill->date_oder = date('Y-m-d');
+        $bill->date_order = date('Y-m-d');
         $bill->total = $cart->totalPrice;
-        $bill->payment = $req->payment;
+        $bill->payment = $req->payment_method;
         $bill->note = $req->notes;
         $bill->save();
 
-        foreach ($cart['items'] as $key => $value) {
-
+        foreach ($cart->items as $key => $value) {
         $bill_detail = new BillDetail;
         $bill_detail->id_bill = $bill->id;
         $bill_detail->id_product = $key;
@@ -99,6 +101,72 @@ class PageController extends Controller
         $bill_detail->save();
     }
     Session::forget('cart');
-    return redirect()->back()->with('thongbao','Quý Khách Đã Đặt Hàng Thành Công');
-    }
+        return redirect()->back()->with('thongbao','Quý Khách Đã Đặt Hàng Thành Công');
+        }
+
+        public function getLogin(){
+            return view('page.dangnhap');
+        }
+        public function getSignin(){
+            return view('page.dangki');
+        }
+        public function postSignin(Request $req){
+            $this->validate($req,
+                [
+                    'email'=>'required|email|unique:users,email',
+                    'password'=>'required|min:6|max:20',
+                    'fullname'=>'required',
+                    're_password'=>'required|same:password'
+                ],
+                [
+                    'email.required'=>'Vui Lòng Nhập Email',
+                    'email.email'=>'Không Đúng Định Dạng Email',
+                    'email.unique'=>'Email Đã Có Người Sử Dụng',
+                    'password.required'=>'Vui lòng Nhập Mật Khẩu',
+                    're_password.same'=>'Mật Khẩu Không Giống Nhau',
+                    'password.min'=>'Mật Khẩu Ít Nhất 6 Kí Tự' 
+                ]);
+            $user = new User();
+            $user->full_name = $req->fullname;
+            $user->email = $req->email;
+            $user->password = Hash::make($req->password);
+            $user->phone = $req->phone;
+            $user->address = $req->address;
+            $user->save();
+            return redirect()->back()->with('thanhcong','Tạo Tài Khoản Thành Công');
+        }
+
+        public function postLogin(Request $req){
+            $this->validate($req,
+                [
+                    'email'=>'required|email',
+                    'password'=>'required|min:6|max:20'
+                ],
+                [
+                    'email.required'=>'Vui Lòng Nhập Email',
+                    'email.email'=>'Email không đúng định dạng',
+                    'password.required'=>'Vui lòng nhập mật khẩu',
+                    'password.min'=>'Mật khẩu ít nhất 6 kí tự',
+                    'password.max'=>'Mật khẩu không quá 20 kí tự'
+                ]
+            );
+            $credentials = array('email'=>$req->email,'password'=>$req->password);
+        if(Auth::attempt($credentials)){
+            return redirect()->back()->with(['flag'=>'success','message'=>'Đăng nhập thành công']);
+            }   
+        else{
+            return redirect()->back()->with(['flag'=>'denger','message'=>'Đăng nhập thất bại']);
+            }
+        }
+        public function postLogout(){
+            Auth::logout();
+            return redirect()->route('trang-chu');
+        }
+
+        public function getSearch(Request $req){
+            $product = Product::where('name','like','%'.$req->key.'%')
+                            ->orWhere('unit_price',$req->key)
+                            ->get();
+                return view('page.search',compact('product'));
+        }
 }
