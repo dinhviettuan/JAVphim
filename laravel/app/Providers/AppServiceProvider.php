@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\ProductType;
 use App\Cart;
+use Illuminate\Facedes\Schema;
 use Session;
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
                     $view->with(['cart'=>Session::get('cart'), 'product_cart'=>$cart->items,'totalPrice'=>$cart->totalPrice,'totalQty'=>$cart->totalQty]);
                 }
         });
+        Schema::defaultStringLength(191);
     }
-
     /**
      * Bootstrap any application services.
      *

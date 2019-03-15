@@ -29,7 +29,7 @@
 						<div>
 							<div class="contact-info">
 								<i class="fa fa-map-marker"></i>
-								<p>30 South Park Avenue San Francisco, CA 94108 Phone: +78 123 456 78</p>
+								<p>30 South Park Avenue San Francisco, CA 94108 Phone: +76 840 7899</p>
 								<p>Nemo enim ipsam voluptatem quia voluptas sit asnatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione.</p>
 							</div>
 						</div>
